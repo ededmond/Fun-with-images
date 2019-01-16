@@ -5,3 +5,6 @@ html, body {
 .img-box {
     float:left;
 }
+.hidden {
+    display:none;
+}

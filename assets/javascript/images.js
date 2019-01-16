@@ -3,24 +3,26 @@ var topics =["puppy","kitten","rat","hamster","snake","dog","cat","elephant","pi
 var favorites = []; //List of ids for favorites to find later
 var gifs = [];
 var loading = "https://media0.giphy.com/media/sSgvbe1m3n93G/200.gif";
+var topic ="";
+
+//TOPIC BUTTONS
 for (var i =0; i <topics.length; i++) {
     makeButton(topics[i]);
 }
-
+function makeButton(name) {
+    var button = $("<button>").text(name);
+    button.addClass("search");
+    $("#topics").append(button);
+}
 //to prevent form from auto triggering; 
 $("form").submit(function(event) {  //btn should be type = "submit"; submits form (default refreshes page)
     event.preventDefault();
     makeButton($("#new-topic")[0].value);
     $("#new-topic")[0].value = '';
 })
-
-function makeButton(name) {
-    var button = $("<button>").text(name);
-    button.addClass("search");
-    $("#topics").append(button);
-}
+//BUTTON FUNCTIONALITY
 $(document).on("click",".search",function() {
-    var topic = $(this).text();
+    topic = $(this).text();
     var address = "https://api.giphy.com/v1/gifs/search?api_key=khtm4DKu4yNq4qGTofWsRAxuiy0mjsVT&q=" + topic + "&limit=10&offset=0&rating=PG-13&lang=en";
     gifs = [];
     $("#gifs").html("<img src = '"+loading+"'>");
@@ -30,6 +32,7 @@ $(document).on("click",".search",function() {
         $("#gifs").html('');
         paintResponse(response.data);
     });
+    $("#load").removeClass("hidden");
 });
 function paintResponse(data) {
     var start = gifs.length;
@@ -48,6 +51,7 @@ function paintResponse(data) {
         $("#gifs").append(card);
     }
 }
+//GIF FUNCTIONALITY
 $(document).on("click",".paused",function() {    //play gifs
     var pic = gifs[$(this).attr("data-value")];
     $(this).attr("src",pic.moving);
@@ -57,4 +61,13 @@ $(document).on("click",".playing",function() {    //stop gifs
     var pic = gifs[$(this).attr("data-value")];
     $(this).attr("src",pic.still);
     $(this).attr("class","gif paused");
+})
+//LOAD FUNCTIONALITY
+$("#load").on("click",function(){
+    var offset = gifs.length;
+    var url = "https://api.giphy.com/v1/gifs/search?api_key=khtm4DKu4yNq4qGTofWsRAxuiy0mjsVT&q=" + topic + "&limit=10&offset="+ offset +"&rating=PG-13&lang=en";
+    $.get(url)
+    .then(function(response) {
+        paintResponse(response.data);
+    });
 })
