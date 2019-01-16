@@ -44,10 +44,23 @@ function paintResponse(data) {
         var card = $("<div class = 'img-box'>");
         var img = $("<img src ='"+ gifs[i +start].still+ "' id ='" +data[i].id +"' >");
         img.addClass("gif paused");
+        img.attr("alt",data[i].title);
         img.attr("data-value",(i+start));
         card.append(img);
         var rating = $("<div class = rating>").text("rating : " + data[i].rating);
         card.append(rating);
+        //SETUP FAVORITES
+        var heart = $("<img>");
+        if (favorites.includes(data[i].id)) {
+            heart.attr("src","assets/images/loved.png");
+            heart.addClass("loved");
+        } else {
+            heart.attr("src","assets/images/unloved.png");
+            heart.addClass("unloved");
+        }
+        heart.attr("id",data[i].id);
+        heart.addClass("fav-icon");
+        rating.append(heart);
         $("#gifs").append(card);
     }
 }
@@ -61,6 +74,48 @@ $(document).on("click",".playing",function() {    //stop gifs
     var pic = gifs[$(this).attr("data-value")];
     $(this).attr("src",pic.still);
     $(this).attr("class","gif paused");
+})
+//FAVORITE FUNCTIONALITY
+$("#favorites").on("click",showFavorites);
+function showFavorites() {
+    if (favorites.length > 0) {
+        var url = "https://api.giphy.com/v1/gifs?api_key=khtm4DKu4yNq4qGTofWsRAxuiy0mjsVT&ids=" + favorites[0];
+        for (var i =1; i < favorites.length; i++) {
+            url = url + "," +favorites[i];
+        }
+        topic = "Favorites";
+        gifs = [];
+        $("#gifs").html("<img src = '"+loading+"'>");
+        $.get(url)
+        .then(function(response) {
+            console.log(response);
+            $("#gifs").html('');
+            paintResponse(response.data);
+        });
+        
+        $("#load").addClass("hidden");
+    } 
+}
+//ADD/REMOVE FAVORITES
+$(document).on("click",".loved",function() {
+    $(this).attr("class","fav-icon unloved");
+    $(this).attr("src","assets/images/unloved.png");
+    var index = favorites.indexOf(this.id);
+    favorites.splice(index,1);
+    if (favorites.length < 1) {
+        $("#favorites").attr("class",'hidden');
+    }
+    if (topic === "Favorites") {   //favorites page is open; refresh the page because removing favorite
+        console.log("got here");
+        showFavorites();
+    }
+})
+$(document).on("click",".unloved",function() {
+    $(this).attr("class","fav-icon loved");
+    $(this).attr("src","assets/images/loved.png");
+    favorites.push($(this).attr("id"));
+    $("#favorites").attr("class",'');
+    
 })
 //LOAD FUNCTIONALITY
 $("#load").on("click",function(){
