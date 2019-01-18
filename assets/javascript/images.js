@@ -20,7 +20,7 @@ function makeButton(name) {
 //to prevent form from auto triggering; 
 $("form").submit(function(event) {  //btn should be type = "submit"; submits form (default refreshes page)
     event.preventDefault();
-    makeButton($("#new-topic")[0].value);
+    makeButton($("#new-topic")[0].value.trim());
     $("#new-topic")[0].value = '';
 })
 //BUTTON FUNCTIONALITY
@@ -45,7 +45,8 @@ function paintResponse(data) {
             moving : data[i].images.fixed_height.url
         });
         var card = $("<div class = 'img-box'>");
-        var img = $("<img src ='"+ gifs[i +start].still+ "' id ='" +data[i].id +"' >");
+        var img = $("<img src ='"+ gifs[i +start].still+ "' >");
+        // img.id(data[i].id);
         img.addClass("gif paused");
         img.attr("alt",data[i].title);
         img.attr("data-value",(i+start));
@@ -65,10 +66,7 @@ function paintResponse(data) {
         heart.attr("id",data[i].id);
         heart.addClass("fav-icon");
         rating.append(heart);
-        //SETUP DOWNLOAD
-        // var down = $("<a href = '" +gifs[i+start].moving+ "' download>");
-        // down.text("&dArr");
-        // rating.append(down);
+        
         //APPEND EVERYTHING TO GIFS
         $("#gifs").append(card);
     }
@@ -108,12 +106,12 @@ function showFavorites() {
     }
 }
 //ADD/REMOVE FAVORITES
-$(document).on("click",".loved",function() {
-    $(this).attr("class","fav-icon unloved");
-    $(this).attr("src","assets/images/unloved.png");
+function unlike(obj) {
+    $(obj).attr("class","fav-icon unloved");
+    $(obj).attr("src","assets/images/unloved.png");
     // var index = favorites.indexOf(this.id);
     // favorites.splice(index,1);
-    localStorage.removeItem(this.id);
+    localStorage.removeItem(obj.id);
     if (localStorage.length < 1) {
         $("#favorites").attr("class",'hidden');
     }
@@ -121,14 +119,28 @@ $(document).on("click",".loved",function() {
         console.log("got here");
         showFavorites();
     }
-})
-$(document).on("click",".unloved",function() {
-    $(this).attr("class","fav-icon loved");
-    $(this).attr("src","assets/images/loved.png");
-    localStorage.setItem(this.id,"loved");
+}
+function like(obj) {
+    $(obj).attr("class","fav-icon loved");
+    $(obj).attr("src","assets/images/loved.png");
+    localStorage.setItem(obj.id,"loved");
     // favorites.push($(this).attr("id"));
     $("#favorites").attr("class",'');
-    
+}
+$(document).on("click",".loved",function() {
+    unlike(this);
+})
+$(document).on("click",".unloved",function() {
+    like(this);
+})
+$(document).on("dblclick",".img-box",function() {
+    var love = this.childNodes[1].childNodes[1];
+    if ($(love).hasClass("loved")) {
+        unlike(love);
+    } else {
+        like(love);
+    }
+
 })
 //LOAD MORE FUNCTIONALITY
 $("#load").on("click",function(){
