@@ -14,18 +14,25 @@ for (var i =0; i <topics.length; i++) {
 }
 function makeButton(name) {
     var button = $("<button>").text(name);
+    button.val(name);
     button.addClass("search");
     $("#topics").append(button);
 }
 //to prevent form from auto triggering; 
 $("form").submit(function(event) {  //btn should be type = "submit"; submits form (default refreshes page)
     event.preventDefault();
-    makeButton($("#new-topic")[0].value.trim());
+    var value = $("#new-topic")[0].value.trim();
+    if (topics.includes(value) || value === ""){
+
+    } else {
+        makeButton(value);
+        topics.push(value);
+    }
     $("#new-topic")[0].value = '';
 })
 //BUTTON FUNCTIONALITY
 $(document).on("click",".search",function() {
-    topic = $(this).text();
+    topic = $(this).val();
     var address = "https://api.giphy.com/v1/gifs/search?api_key=khtm4DKu4yNq4qGTofWsRAxuiy0mjsVT&q=" + topic + "&limit=10&offset=0&rating=PG-13&lang=en";
     gifs = [];
     $("#gifs").html("<img src = '"+loading+"'>");
@@ -34,7 +41,9 @@ $(document).on("click",".search",function() {
         console.log(response);
         $("#gifs").html('');
         paintResponse(response.data);
-    });
+    }).catch(function(error) {
+        console.log(error);
+    })
     $("#load").removeClass("hidden");
 });
 function paintResponse(data) {

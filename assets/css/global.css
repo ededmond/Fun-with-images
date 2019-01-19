@@ -3,10 +3,26 @@ html, body {
     padding:0;
 }
 .container {
+    /* margin:0; */
+    padding:0;
+}
+button, input {
+    border-radius : 10px;
+    outline:none !important;
     
 }
+input[type=submit] {
+    background-color:rgb(0, 174, 255);
+    display:block;
+    margin:auto;
+}
+.col-12 {
+    /* margin-right:5px; */
+}
+
 .img-box {
     float:left;
+    margin:3px;
 }
 .fav-icon {
     float:right;
