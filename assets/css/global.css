@@ -6,30 +6,71 @@ html, body {
     /* margin:0; */
     padding:0;
 }
+#topics {
+    margin-top:10px;
+    margin-bottom:10px;
+}
 button, input {
     border-radius : 10px;
+    /* border-color : red black green; */
     outline:none !important;
-    
 }
-input[type=submit] {
-    background-color:rgb(0, 174, 255);
+input {
     display:block;
     margin:auto;
 }
+input[type=submit] {
+    background-color:rgb(0, 174, 255);
+    border-color:rgb(0, 174, 255);
+}
+button {
+    /* border-color:red black; */
+    background-color:pink;
+    border-color:pink;
+}
+#favorites {
+    background-color: rgb(255, 157, 0);
+    border-color:rgb(255, 157, 0);
+}
+
 .col-12 {
-    /* margin-right:5px; */
+    /* border:red 1px solid; */
 }
 
 .img-box {
     float:left;
     margin:3px;
 }
-.fav-icon {
+.fa-heart {
     float:right;
-    height: 15px;
-    width:15px;
+    color:gray;
     margin:3px;
+    font-size:150%;
+}
+.loved {
+    color:red;
 }
 .hidden {
     display:none;
+}
+.center {
+    text-align:center;
+}
+#load {
+    text-align:center;
+    margin:auto;
+    background-color:lightgray;
+    border-color:lightgray;
+}
+
+@media screen and (max-width: 990px) {
+    input[type=text] {
+        width:160px;
+    }
+    
+}
+@media screen and (max-width:768px) {
+    input[type=text] {
+        width:50vw;
+    }
 }

@@ -2,7 +2,6 @@ var topics =["puppy","kitten","rat","hamster","snake","dog","cat","elephant","pi
     "dragon","unicorn"];
 var favorites = []; //List of ids for favorites to find later
 var localStorage = window.localStorage;
-var gifs = [];
 var loading = "https://media0.giphy.com/media/sSgvbe1m3n93G/200.gif";
 var topic ="";
 if (localStorage.length > 0) {
@@ -21,6 +20,7 @@ function makeButton(name) {
 //to prevent form from auto triggering; 
 $("form").submit(function(event) {  //btn should be type = "submit"; submits form (default refreshes page)
     event.preventDefault();
+    console.log($("#new-topic"));
     var value = $("#new-topic")[0].value.trim();
     if (topics.includes(value) || value === ""){
 
@@ -49,47 +49,50 @@ $(document).on("click",".search",function() {
 function paintResponse(data) {
     var start = gifs.length;
     for (var i= 0; i < data.length; i++) {
-        gifs.push({
-            still : data[i].images.fixed_height_still.url,
-            moving : data[i].images.fixed_height.url
-        });
         var card = $("<div class = 'img-box'>");
-        var img = $("<img src ='"+ gifs[i +start].still+ "' >");
+        var img = $("<img src ='"+ data[i].images.fixed_height_still.url+ "' >");
         // img.id(data[i].id);
-        img.addClass("gif paused");
+        img.addClass("gif");
         img.attr("alt",data[i].title);
-        img.attr("data-value",(i+start));
+        img.attr("data-paused",data[i].images.fixed_height_still.url);
+        img.attr("data-animated",data[i].images.fixed_height.url);
+        img.attr("data-state","paused");
         card.append(img);
         //SETUP RATING
         var rating = $("<div class = rating>").text("rating : " + data[i].rating);
         card.append(rating);
         //SETUP FAVORITES
-        var heart = $("<img>");
+        var heartIcon = $("<i>");
+        heartIcon.addClass("fa-heart")
+        // var heart = $("<img>");
         if (localStorage.getItem(data[i].id)==="loved") {
-            heart.attr("src","assets/images/loved.png");
-            heart.addClass("loved");
+            // heart.attr("src","assets/images/loved.png");
+            // heart.addClass("loved");
+            heartIcon.addClass("fas loved");
         } else {
-            heart.attr("src","assets/images/unloved.png");
-            heart.addClass("unloved");
+            // heart.attr("src","assets/images/unloved.png");
+            // heart.addClass("unloved");
+            heartIcon.addClass("far unloved");
         }
-        heart.attr("id",data[i].id);
-        heart.addClass("fav-icon");
-        rating.append(heart);
-        
+        // heart.attr("id",data[i].id);
+        // heart.addClass("fav-icon");
+        // rating.append(heart);
+        heartIcon.attr("id",data[i].id);
+        rating.append(heartIcon);
         //APPEND EVERYTHING TO GIFS
         $("#gifs").append(card);
     }
 }
 //GIF FUNCTIONALITY
-$(document).on("click",".paused",function() {    //play gifs
-    var pic = gifs[$(this).attr("data-value")];
-    $(this).attr("src",pic.moving);
-    $(this).attr("class","gif playing");
-})
-$(document).on("click",".playing",function() {    //stop gifs
-    var pic = gifs[$(this).attr("data-value")];
-    $(this).attr("src",pic.still);
-    $(this).attr("class","gif paused");
+$(document).on("click",".gif",function() {    //play gifs
+    var state = $(this).attr("data-state");
+    if (state === "paused") {
+        $(this).attr("src",$(this).attr("data-animated"));
+        $(this).attr("data-state","playing");
+    } else {
+        $(this).attr("src",$(this).attr("data-paused"));
+        $(this).attr("data-state","paused");
+    }
 })
 //FAVORITE FUNCTIONALITY
 $("#favorites").on("click",showFavorites);
@@ -116,8 +119,8 @@ function showFavorites() {
 }
 //ADD/REMOVE FAVORITES
 function unlike(obj) {
-    $(obj).attr("class","fav-icon unloved");
-    $(obj).attr("src","assets/images/unloved.png");
+    $(obj).attr("class","fa-heart far unloved");
+    // $(obj).attr("src","assets/images/unloved.png");
     // var index = favorites.indexOf(this.id);
     // favorites.splice(index,1);
     localStorage.removeItem(obj.id);
@@ -130,8 +133,8 @@ function unlike(obj) {
     }
 }
 function like(obj) {
-    $(obj).attr("class","fav-icon loved");
-    $(obj).attr("src","assets/images/loved.png");
+    $(obj).attr("class","loved fa-heart fas");
+    // $(obj).attr("src","assets/images/loved.png");
     localStorage.setItem(obj.id,"loved");
     // favorites.push($(this).attr("id"));
     $("#favorites").attr("class",'');
