@@ -1,11 +1,14 @@
 var topics =["puppy","kitten","rat","hamster","snake","dog","cat","elephant","pig","spider","lizard",
     "dragon","unicorn"];
-var favorites = []; //List of ids for favorites to find later
 var localStorage = window.localStorage;
 var loading = "https://media0.giphy.com/media/sSgvbe1m3n93G/200.gif";
 var topic ="";
-if (localStorage.length > 0) {
+var localFavorites = "giphy-favorites";
+var favorites = JSON.parse(localStorage.getItem(localFavorites));
+if (favorites) {
     $("#favorites").attr("class",'');
+} else {
+    favorites = [];
 }
 //TOPIC BUTTONS
 for (var i =0; i <topics.length; i++) {
@@ -65,7 +68,7 @@ function paintResponse(data) {
         var heartIcon = $("<i>");
         heartIcon.addClass("fa-heart")
         // var heart = $("<img>");
-        if (localStorage.getItem(data[i].id)==="loved") {
+        if (favorites.indexOf(data[i].id)!==-1) {
             // heart.attr("src","assets/images/loved.png");
             // heart.addClass("loved");
             heartIcon.addClass("fas loved");
@@ -97,10 +100,10 @@ $(document).on("click",".gif",function() {    //play gifs
 //FAVORITE FUNCTIONALITY
 $("#favorites").on("click",showFavorites);
 function showFavorites() {
-    if (localStorage.length > 0) {
-        var url = "https://api.giphy.com/v1/gifs?api_key=khtm4DKu4yNq4qGTofWsRAxuiy0mjsVT&ids=" + localStorage.key(0);
-        for (var i =1; i < localStorage.length; i++) {
-            url = url + "," +localStorage.key(i);
+    if (favorites.length > 0) {
+        var url = "https://api.giphy.com/v1/gifs?api_key=khtm4DKu4yNq4qGTofWsRAxuiy0mjsVT&ids=" + favorites[0];
+        for (var i =1; i < favorites.length; i++) {
+            url = url + "," +favorites[i];
         }
         topic = "Favorites";
         gifs = [];
@@ -123,21 +126,22 @@ function unlike(obj) {
     // $(obj).attr("src","assets/images/unloved.png");
     // var index = favorites.indexOf(this.id);
     // favorites.splice(index,1);
-    localStorage.removeItem(obj.id);
-    if (localStorage.length < 1) {
+    favorites.splice(favorites.indexOf(obj.id),1);
+    if (favorites.length < 1) {
         $("#favorites").attr("class",'hidden');
     }
     if (topic === "Favorites") {   //favorites page is open; refresh the page because removing favorite
-        console.log("got here");
         showFavorites();
     }
+    localStorage.setItem(localFavorites,JSON.stringify(favorites));
 }
 function like(obj) {
     $(obj).attr("class","loved fa-heart fas");
     // $(obj).attr("src","assets/images/loved.png");
-    localStorage.setItem(obj.id,"loved");
+    favorites.push(obj.id);
     // favorites.push($(this).attr("id"));
     $("#favorites").attr("class",'');
+    localStorage.setItem(localFavorites,JSON.stringify(favorites));
 }
 $(document).on("click",".loved",function() {
     unlike(this);
