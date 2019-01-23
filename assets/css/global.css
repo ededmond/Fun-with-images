@@ -28,6 +28,10 @@ button {
     background-color:pink;
     border-color:pink;
 }
+#ascending {
+    background-color:rgb(240, 240, 240);
+    border-color:rgb(207, 207, 207);
+}
 #favorites {
     background-color: rgb(255, 157, 0);
     border-color:rgb(255, 157, 0);
