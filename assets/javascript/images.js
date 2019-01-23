@@ -5,6 +5,7 @@ var loading = "https://media0.giphy.com/media/sSgvbe1m3n93G/200.gif";
 var topic ="";
 var localFavorites = "giphy-favorites";
 var favorites = JSON.parse(localStorage.getItem(localFavorites));
+var ascending = false;
 if (favorites) {
     $("#favorites").attr("class",'');
 } else {
@@ -35,6 +36,7 @@ $("form").submit(function(event) {  //btn should be type = "submit"; submits for
 })
 //BUTTON FUNCTIONALITY
 $(document).on("click",".search",function() {
+    $("#ascending").attr("class","hidden");
     topic = $(this).val();
     var address = "https://api.giphy.com/v1/gifs/search?api_key=khtm4DKu4yNq4qGTofWsRAxuiy0mjsVT&q=" + topic + "&limit=10&offset=0&rating=PG-13&lang=en";
     gifs = [];
@@ -101,10 +103,20 @@ $(document).on("click",".gif",function() {    //play gifs
 $("#favorites").on("click",showFavorites);
 function showFavorites() {
     if (favorites.length > 0) {
-        var url = "https://api.giphy.com/v1/gifs?api_key=khtm4DKu4yNq4qGTofWsRAxuiy0mjsVT&ids=" + favorites[0];
-        for (var i =1; i < favorites.length; i++) {
-            url = url + "," +favorites[i];
+        $("#ascending").attr("class",'');
+        var url = "https://api.giphy.com/v1/gifs?api_key=khtm4DKu4yNq4qGTofWsRAxuiy0mjsVT&ids="
+        if (ascending) {
+            url = url + favorites[0];
+            for (var i =1; i < favorites.length; i++) {
+                url = url + "," +favorites[i];
+            }
+        } else {
+            url = url + favorites[favorites.length-1];
+            for (var i =favorites.length-2; i >= 0; i--) {
+                url = url + "," +favorites[i];
+            }
         }
+        
         topic = "Favorites";
         gifs = [];
         $("#gifs").html("<img src = '"+loading+"'>");
@@ -166,4 +178,8 @@ $("#load").on("click",function(){
     .then(function(response) {
         paintResponse(response.data);
     });
+})
+$("#ascending").on("click",function() {
+    ascending = !ascending;
+    showFavorites();
 })
